@@ -4,6 +4,9 @@ library(progress)
 
 ## ~ 20 minutes
 
+## TODO: do this in parallel
+## TODO: reset 'id' column to match internal ordering
+
 
 # mukey grid
 mu <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
@@ -29,7 +32,7 @@ g$id <- 1:nrow(g)
 # plot(bb, add = TRUE)
 # plot(st_geometry(g), add = TRUE, border = 2)
 
-## TODO: do this in parallel
+
 
 # iterate over tile grid, test for all nodata
 # remove those tiles
