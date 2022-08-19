@@ -1,12 +1,39 @@
-library(terra)
-library(sf)
+## Mosaic 30m tiles and save second version after aggregation to 270m or similar
+## 2022-07-21
+## D.E. Beaudette
 
+library(purrr)
+library(furrr)
+library(terra)
 
 ## continuous variables
-vars <- c("sandtotal_r", "silttotal_r", "claytotal_r", "om_r", "cec7_r", "ph1to1h2o_r")
+v <- c("sandtotal_r", "claytotal_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
+
+input.dir <- 'processed-tiles'
+output.dir <- 'results'
+dir.create(output.dir)
+
+# test: works
+map('sandtotal_r', .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir)
+
+# init multiple cores
+# aggregate seems to use multiple cores, so only start 4 concurrent operations
+# 4 workers -> 28GB RAM required
+plan(multisession, workers = 4)
+
+system.time(z <- future_map(s, .mosaicSlices, .progress = TRUE))
+
+# stop parallel back-ends
+plan(sequential)
+
+## cleanup
+rm(list = ls())
+gc(reset = TRUE)
 
 
-for(i in vars) {
+
+
+for (i in v) {
   
   print(i)
   
@@ -25,4 +52,16 @@ for(i in vars) {
   writeRaster(x, filename = f, overwrite = TRUE)
   
 }
+
+
+## new version
+
+
+
+# 0-pad
+s <- sprintf("%03d", ..slices)
+
+
+
+
 
