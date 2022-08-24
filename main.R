@@ -17,3 +17,6 @@ output.dir <- 'temporary-mukey-tiles'
 # tile names match tile ID
 tileMukeyGrid(mu = mu, tg = tg, output.dir = output.dir)
 
+
+# ~ 
+# 7 variables, single depth interval, all cores

@@ -59,18 +59,18 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   )
   
   if (inherits(p, 'try-error')) {
-    message('SDA query failed, not sure why')
+    message('SDA query failed, likely hit resource constraint')
     
     # save tile ID + associated RAT
     error.log <- list(i = i, rat = rat)
-    next
+    return(error.log)
   } else {
     error.log <- NULL
   }
   
   # just in case there were no valid mukeys
   if (is.null(p)) {
-    next
+    return(NULL)
   }
   
   # ensure RAT only contains columns of interest

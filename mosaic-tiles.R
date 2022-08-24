@@ -2,26 +2,31 @@
 ## 2022-07-21
 ## D.E. Beaudette
 
+# ~ 1 hour for 7 properties
+
 library(purrr)
 library(furrr)
 library(terra)
 
+source('local-functions.R')
+
 ## continuous variables
-v <- c("sandtotal_r", "claytotal_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
+v <- c("sandtotal_r", "silttotal_r", "claytotal_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
+
 
 input.dir <- 'processed-tiles'
 output.dir <- 'results'
 dir.create(output.dir)
 
 # test: works
-map('sandtotal_r', .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir)
+# map('sandtotal_r', .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir)
 
 # init multiple cores
 # aggregate seems to use multiple cores, so only start 4 concurrent operations
 # 4 workers -> 28GB RAM required
 plan(multisession, workers = 4)
 
-system.time(z <- future_map(s, .mosaicSlices, .progress = TRUE))
+system.time(z <- future_map(v, .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir, .progress = TRUE))
 
 # stop parallel back-ends
 plan(sequential)
@@ -33,33 +38,33 @@ gc(reset = TRUE)
 
 
 
-for (i in v) {
-  
-  print(i)
-  
-  # current tile set
-  p <- sprintf('%s.*\\.tif$', i)
-  fl <- list.files(path = 'results', pattern = p, full.names = TRUE)
-  
-  # assemble pieces
-  # resolution may not be exactly the same
-  x <- vrt(fl)
-  
-  # output file name
-  f <- sprintf('%s_final.tif', gsub(pattern = '_r', '', x = i, fixed = TRUE))
-  
-  # convert VRT -> single raster
-  writeRaster(x, filename = f, overwrite = TRUE)
-  
-}
-
-
-## new version
-
-
-
-# 0-pad
-s <- sprintf("%03d", ..slices)
+# for (i in v) {
+#   
+#   print(i)
+#   
+#   # current tile set
+#   p <- sprintf('%s.*\\.tif$', i)
+#   fl <- list.files(path = 'results', pattern = p, full.names = TRUE)
+#   
+#   # assemble pieces
+#   # resolution may not be exactly the same
+#   x <- vrt(fl)
+#   
+#   # output file name
+#   f <- sprintf('%s_final.tif', gsub(pattern = '_r', '', x = i, fixed = TRUE))
+#   
+#   # convert VRT -> single raster
+#   writeRaster(x, filename = f, overwrite = TRUE)
+#   
+# }
+# 
+# 
+# ## new version
+# 
+# 
+# 
+# # 0-pad
+# s <- sprintf("%03d", ..slices)
 
 
 

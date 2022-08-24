@@ -1,5 +1,8 @@
 
 ## TODO: careful with NA handling
+## TODO: catch failed SDA requests in a second pass
+## -----> why does this happen?
+
 
 library(purrr)
 library(furrr)
@@ -23,28 +26,30 @@ unlink(output.dir, recursive = TRUE)
 dir.create(output.dir)
 
 ## chorizon variables
+## !! > ~ 7 vars could lead to SDA resource constraints stopping query
+## --> tile 227 for example
 
-## TODO: asking for 'wtenthbar_r' results in mostly NA
-# https://github.com/ncss-tech/soilDB/issues/261
-
-# v <- c("sandtotal_r", "silttotal_r", "claytotal_r", "om_r", "cec7_r", "ph1to1h2o_r", "wthirdbar_r", "wtenthbar_r", "wfifteenbar_r")
-v <- c("sandtotal_r", "claytotal_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
+# v <- c("sandtotal_r", "silttotal_r", "claytotal_r", "om_r", "cec7_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
+v <- c("sandtotal_r", "silttotal_r", "claytotal_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
 
 # pre-tiled mukey grids
-g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif', full.names = TRUE)
+# must exclude any other accessory files in this dir: e.g. .tif.aux.xml
+g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif$', full.names = TRUE)
 
 ## iterate over tiles
 .tileIndex <- seq_along(g.files)
 
 # works as expected
-# map(.x = 10, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir)
+# map(.x = 227, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir)
+# map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir)
+
 
 # init multiple cores
 plan(multisession)
 
 system.time(
   z <- future_map(
-    .tileIndex[1:20], 
+    .tileIndex, 
     .f = makeThematicTileSDA, 
     tiles = g.files, 
     vars = v, 
@@ -57,6 +62,62 @@ system.time(
 
 # stop parallel back-ends
 plan(sequential)
+
+## check for errors or failed SDA requests 
+idx <- which(!sapply(z, is.null))
+zz <- z[idx]
+
+sapply(zz, function(i) {
+  nrow(i$rat)
+})
+
+
+.secondPass <- sapply(zz, function(i) {
+  i$i
+})
+
+
+plan(multisession)
+
+system.time(
+  z <- future_map(
+    .secondPass,
+    .f = makeThematicTileSDA,
+    tiles = g.files,
+    vars = v,
+    top = 0,
+    bottom = 25,
+    output.dir = output.dir,
+    .progress = TRUE
+  )
+)
+
+plan(sequential)
+
+
+
+## check for errors or failed SDA requests 
+idx <- which(!sapply(z, is.null))
+zz <- z[idx]
+
+sapply(zz, function(i) {
+  nrow(i$rat)
+})
+
+
+.thirdPass <- sapply(zz, function(i) {
+  i$i
+})
+
+
+
+## final check
+
+n.expected <- length(v) * length(g.files)
+n.output <- length(list.files(output.dir))
+
+stopifnot(n.expected == n.output)
+
 
 ## cleanup
 rm(list = ls())
