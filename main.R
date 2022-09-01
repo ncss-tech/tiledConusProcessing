@@ -3,9 +3,13 @@
 ##
 
 ## Notes:
-# processing tiles: 
+# government machine, at the office
 #  * 26 minutes for a single component level property
-#  * XX minutes for mosaic/re-sample of single property
+#  * 37 minutes for 2 hz level properties
+#
+#  * 25 minutes for mosaic/re-sample of single property
+#  *
+#
 
 
 ## create tile systems
