@@ -45,7 +45,8 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   rat <- cats(x)[[1]]
   
   # weighted mean over components to account for large misc. areas
-  # depth-weighted average 0-25cm
+  # depth-weighted average over top--bottom
+  # depths ignored for component level properties like WEI
   p <-  try(
     get_SDA_property(
       property = vars,

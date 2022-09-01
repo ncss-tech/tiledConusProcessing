@@ -9,9 +9,7 @@ library(furrr)
 library(terra)
 
 source('local-functions.R')
-
-## continuous variables
-v <- c("sandtotal_r", "silttotal_r", "claytotal_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
+source('config.R')
 
 
 input.dir <- 'processed-tiles'

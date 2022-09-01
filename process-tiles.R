@@ -11,6 +11,7 @@ library(sf)
 library(soilDB)
 
 source('local-functions.R')
+source('config.R')
 
 # mukey grid
 mu <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
@@ -25,13 +26,6 @@ output.dir <- 'processed-tiles'
 unlink(output.dir, recursive = TRUE)
 dir.create(output.dir)
 
-## chorizon variables
-## !! > ~ 7 vars could lead to SDA resource constraints stopping query
-## --> tile 227 for example
-
-# v <- c("sandtotal_r", "silttotal_r", "claytotal_r", "om_r", "cec7_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
-v <- c("sandtotal_r", "silttotal_r", "claytotal_r", "ph1to1h2o_r", "wthirdbar_r", "wfifteenbar_r")
-
 # pre-tiled mukey grids
 # must exclude any other accessory files in this dir: e.g. .tif.aux.xml
 g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif$', full.names = TRUE)
@@ -42,6 +36,9 @@ g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif$', full.
 # works as expected
 # map(.x = 227, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir)
 # map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir)
+
+# component-level data: top/bottom arguments are ignored
+# map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = 'wei', top = 0, bottom = 25, output.dir = output.dir)
 
 
 # init multiple cores

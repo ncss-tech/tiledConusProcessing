@@ -18,5 +18,3 @@ output.dir <- 'temporary-mukey-tiles'
 tileMukeyGrid(mu = mu, tg = tg, output.dir = output.dir)
 
 
-# ~ 
-# 7 variables, single depth interval, all cores
