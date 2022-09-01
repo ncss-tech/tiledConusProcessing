@@ -1,20 +1,26 @@
-library(terra)
-library(sf)
-library(progress)
+##
+##
+##
 
-source('local-functions.R')
+## create tile systems
+## these are already in place
+# source('tiling-grid-A.R')
 
-# CONUS gNATSGO 30m grid
-# UInt32
-mu <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
-# load optimized grid, with all-NA tiles removed
-tg <- readRDS(file = 'A_grid.rds')
+## tile CONUS mukey grid
+## only need to do this once
+# source('tile-mukey-grid.R')
 
-# tiles go here
-output.dir <- 'temporary-mukey-tiles'
 
-# tile names match tile ID
-tileMukeyGrid(mu = mu, tg = tg, output.dir = output.dir)
+## process tiles, create thematic grid tiles
+source('process-tiles.R')
+
+
+## mosiac / re-sample tiles
+source('mosaic-tiles.R')
+
+
+
+
 
 
