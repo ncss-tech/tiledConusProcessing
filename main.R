@@ -6,9 +6,10 @@
 # government machine, at the office
 #  * 26 minutes for a single component level property
 #  * 37 minutes for 2 hz level properties
+#  * 45 minutes for 3 hz level properties
 #
 #  * 25 minutes for mosaic/re-sample of single property
-#  *
+#  * 30 minutes for 3 hz level properties
 #
 
 
