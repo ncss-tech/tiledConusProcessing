@@ -2,6 +2,10 @@
 ## 2022-07-21
 ## D.E. Beaudette
 
+
+## TODO:
+#  * categorical variables
+
 # ~ 1 hour for 7 properties
 
 library(purrr)
@@ -33,36 +37,6 @@ plan(sequential)
 rm(list = ls())
 gc(reset = TRUE)
 
-
-
-
-# for (i in v) {
-#   
-#   print(i)
-#   
-#   # current tile set
-#   p <- sprintf('%s.*\\.tif$', i)
-#   fl <- list.files(path = 'results', pattern = p, full.names = TRUE)
-#   
-#   # assemble pieces
-#   # resolution may not be exactly the same
-#   x <- vrt(fl)
-#   
-#   # output file name
-#   f <- sprintf('%s_final.tif', gsub(pattern = '_r', '', x = i, fixed = TRUE))
-#   
-#   # convert VRT -> single raster
-#   writeRaster(x, filename = f, overwrite = TRUE)
-#   
-# }
-# 
-# 
-# ## new version
-# 
-# 
-# 
-# # 0-pad
-# s <- sprintf("%03d", ..slices)
 
 
 

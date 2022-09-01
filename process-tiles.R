@@ -64,47 +64,53 @@ plan(sequential)
 idx <- which(!sapply(z, is.null))
 zz <- z[idx]
 
-sapply(zz, function(i) {
-  nrow(i$rat)
-})
 
-
-.secondPass <- sapply(zz, function(i) {
-  i$i
-})
-
-
-plan(multisession)
-
-system.time(
-  z <- future_map(
-    .secondPass,
-    .f = makeThematicTileSDA,
-    tiles = g.files,
-    vars = v,
-    top = 0,
-    bottom = 25,
-    output.dir = output.dir,
-    .progress = TRUE
+if (length(zz) > 0) {
+  
+  ## TODO: check on these
+  sapply(zz, function(i) {
+    nrow(i$rat)
+  })
+  
+  .secondPass <- sapply(zz, function(i) {
+    i$i
+  })
+  
+  plan(multisession)
+  
+  system.time(
+    z <- future_map(
+      .secondPass,
+      .f = makeThematicTileSDA,
+      tiles = g.files,
+      vars = v,
+      top = 0,
+      bottom = 25,
+      output.dir = output.dir,
+      .progress = TRUE
+    )
   )
-)
+  
+  plan(sequential)
+  
+  
+  ## TODO: find a more elegant solution
+  
+  ## check for errors or failed SDA requests 
+  idx <- which(!sapply(z, is.null))
+  zz <- z[idx]
+  
+  sapply(zz, function(i) {
+    nrow(i$rat)
+  })
+  
+  
+  .thirdPass <- sapply(zz, function(i) {
+    i$i
+  })
+  
+}
 
-plan(sequential)
-
-
-
-## check for errors or failed SDA requests 
-idx <- which(!sapply(z, is.null))
-zz <- z[idx]
-
-sapply(zz, function(i) {
-  nrow(i$rat)
-})
-
-
-.thirdPass <- sapply(zz, function(i) {
-  i$i
-})
 
 
 
