@@ -50,8 +50,8 @@ system.time(
     .f = makeThematicTileSDA, 
     tiles = g.files, 
     vars = v, 
-    top = 0, 
-    bottom = 25, 
+    top = depth.interval[1], 
+    bottom = depth.interval[2], 
     output.dir = output.dir,
     .progress = TRUE
   )
@@ -84,8 +84,8 @@ if (length(zz) > 0) {
       .f = makeThematicTileSDA,
       tiles = g.files,
       vars = v,
-      top = 0,
-      bottom = 25,
+      top = depth.interval[1],
+      bottom = depth.interval[2],
       output.dir = output.dir,
       .progress = TRUE
     )

@@ -11,3 +11,5 @@
 
 v <- c("om_r", "cec7_r", "ecec_r")
 
+## depth interval
+depth.interval <- c(0, 25)
