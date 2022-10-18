@@ -31,6 +31,7 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   # current tile
   x <- rast(tiles[i])
   
+  ## TODO: test as.factor()
   # init RAT
   # cannot contain NA or NaN
   uids <- terra::unique(x)[, 1]

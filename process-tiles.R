@@ -17,7 +17,7 @@ source('config.R')
 mu <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
 # load optimized grid, with all-NA tiles removed
-g <- readRDS(file = 'A_grid.rds')
+g <- readRDS(file = 'E:/working_copies/tiledConusProcessing/A_grid.rds')
 
 # tiles go here
 output.dir <- 'processed-tiles'
