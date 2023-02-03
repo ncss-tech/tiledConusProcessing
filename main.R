@@ -3,6 +3,8 @@
 ##
 
 ## Notes:
+# * be sure to disable VPN and free as much RAM as possible
+#
 # government machine, at the office
 #  * 26 minutes for a single component level property
 #  * 37 minutes for 2 hz level properties
@@ -18,7 +20,8 @@
 # source('tiling-grid-A.R')
 
 ## tile CONUS mukey grid
-## only need to do this once
+## only need to do this once per FY snapshot
+# ~ 10 minutes
 # source('tile-mukey-grid.R')
 
 
