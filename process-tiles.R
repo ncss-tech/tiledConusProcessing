@@ -33,12 +33,13 @@ g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif$', full.
 ## iterate over tiles
 .tileIndex <- seq_along(g.files)
 
-# works as expected
-# map(.x = 227, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir)
-# map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir)
+## test that these work as expected
+# map(.x = 227, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir, .progress = TRUE)
+# 
+# map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir, .progress = TRUE)
 
-# component-level data: top/bottom arguments are ignored
-# map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = 'wei', top = 0, bottom = 25, output.dir = output.dir)
+## component-level data: top/bottom arguments are ignored
+# map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = 'wei', top = 0, bottom = 25, output.dir = output.dir, .progress = TRUE)
 
 
 # init multiple cores

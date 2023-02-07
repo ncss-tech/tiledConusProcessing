@@ -1,7 +1,7 @@
 library(soilDB)
 library(terra)
 library(sf)
-library(viridis)
+library(viridisLite)
 library(rasterVis)
 
 q <- "SELECT
@@ -12,7 +12,7 @@ q <- "SELECT
     INNER JOIN chorizon ON component.cokey = chorizon.cokey
     WHERE legend.areasymbol != 'US' 
     AND majcompflag = 'Yes' 
-    AND hzname LIKE '%O%';"
+    AND hzname LIKE 'E%';"
 
 x <- SDA_query(q)
 nrow(x)
@@ -32,11 +32,11 @@ nrow(x)
 g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
 # ~ 17 minutes
-system.time(r <- app(g, fun = .f, filename = 'O-horizon.tif', overwrite = TRUE))
+system.time(r <- app(g, fun = .f, filename = 'E-horizon.tif', overwrite = TRUE))
 
 # 10x aggregation
 # ~ 4.8 minutes
-system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'O-horizon-300m.tif', overwrite = TRUE))
+system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'E-horizon-300m.tif', overwrite = TRUE))
 
 
 
@@ -56,15 +56,15 @@ mu <- mukey.wcs(aoi = a, db = 'gssurgo')
 # extract RAT for thematic mapping
 rat <- cats(mu)[[1]]
 
-rat$O.hz <- factor(as.integer(rat$mukey) %in% as.integer(x$mukey), levels = c('FALSE', 'TRUE'))
+rat$condition <- factor(as.integer(rat$mukey) %in% as.integer(x$mukey), levels = c('FALSE', 'TRUE'))
 
-table(rat$O.hz)
+table(rat$condition)
 
 levels(mu) <- rat
 
-activeCat(mu) <- 'O.hz'
-mu.stack <- catalyze(mu)[['O.hz']]
-plot(mu.stack, axes = FALSE, maxcell = 1e5, col = viridis(2))
+activeCat(mu) <- 'condition'
+mu.stack <- catalyze(mu)[['condition']]
+plot(mu.stack, axes = FALSE, maxcell = 1e5, col = mako(2))
 
 
 
