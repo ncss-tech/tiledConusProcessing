@@ -1,13 +1,13 @@
-
-## TODO:
-# * think about the most efficient grid cell size, likely 300m
+## Create (experimental) STATSGO2 mukey grid (300m) for SoilWeb WCS
+## D.E Beaudette
+## 2023-02-23
 
 library(terra)
 
 .path <- 'e:/gis_data/mukey-grids'
 
-# gNATSGO 450m mukey grid, used as template
-x <- rast(file.path(.path, 'gNATSGO-mukey-ML-450m.tif'))
+# gNATSGO 300m mukey grid, used as template
+x <- rast(file.path(.path, 'gNATSGO-mukey-ML-300m.tif'))
 
 # latest STATSGO
 s <- vect('e:/gis_data/STATSGO2/wss_gsmsoil_US_[2016-10-13]/spatial/gsmsoilmu_a_us.shp')
@@ -21,8 +21,8 @@ s <- project(s, crs(x))
 options(scipen = 10000)
 s$mukey.numeric <- as.numeric(s$MUKEY)
 
-# rasterize to 450m grid
-# ~ 20 seconds
+# rasterize to 300m grid
+# ~ 30 seconds
 system.time(
   g <- rasterize(
     s, x, 
@@ -32,22 +32,19 @@ system.time(
 
 
 # save as UInt32
-# NODATA encoded as 4294967295
+# NODATA encoded as 0
 # will build overviews later
 writeRaster(
   g, filename = file.path(.path, 'gSTATSGO-mukey.tif'), 
   overwrite = TRUE,
-  datatype = 'INT4U'
+  datatype = 'INT4U', 
+  NAflag = 0
 )
-
-
-
-
 
 
 ## check: ok
 # should be UInt32
-# NODATA 4294967295
+# NODATA 0
 i <- sf::gdal_utils(util = 'info', source = file.path(.path, 'gSTATSGO-mukey.tif'))
 
 
