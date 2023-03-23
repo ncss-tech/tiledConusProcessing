@@ -2,6 +2,9 @@
 ## D.E Beaudette
 ## 2023-02-23
 
+## TODO: consider a 150m grid, 300m is kind of chunky
+
+
 library(terra)
 
 .path <- 'e:/gis_data/mukey-grids'

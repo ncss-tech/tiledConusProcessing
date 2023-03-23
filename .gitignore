@@ -2,3 +2,4 @@
 *.tif
 tiledConusProcessing.Rproj
 .Rproj.user/*
+.Rproj.user
