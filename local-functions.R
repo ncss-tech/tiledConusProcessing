@@ -31,7 +31,8 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   # current tile
   x <- rast(tiles[i])
   
-  ## TODO: test as.factor()
+  ## TODO: convert to as.factor()
+  ##       --> see conus soil color code for latest approach
   # init RAT
   # cannot contain NA or NaN
   uids <- terra::unique(x)[, 1]
@@ -87,7 +88,7 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   
   ## TODO: possibly faster
   # iteratively:
-  # as.numeric(x, index = match(.var, vars))
+  # as.numeric(x, index = vars)
   
   # grid + RAT -> stack of numerical grids
   x.stack <- catalyze(x)

@@ -2,6 +2,12 @@
 ## Draft workflow for creating thematic maps from CONUS gNATSGO mukey grid + SDA
 ##
 
+## TODO:
+# * profile CPU, RAM, disk, network resources
+# * 
+
+
+
 ## Notes:
 # * be sure to disable VPN and free as much RAM as possible
 #
