@@ -22,7 +22,7 @@ sql <- "SELECT
 # no semi-colons allowed in the SQL
 x <- soilDB:::.SDA_query_FOR_JSON_AUTO(sql)
 
-# 320032
+# 321973
 nrow(x)
 
 table(x$invesintens, useNA = 'always')
