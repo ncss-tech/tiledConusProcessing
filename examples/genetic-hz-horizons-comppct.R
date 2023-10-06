@@ -19,7 +19,7 @@ q <- "SELECT
       FROM 
       component INNER JOIN chorizon ON component.cokey = chorizon.cokey
       -- pattern matching on horizon name
-      WHERE hzname LIKE 'E%'
+      WHERE hzname LIKE 'E'
     ) AS hz ON component.cokey = hz.cokey
     WHERE legend.areasymbol != 'US' 
     -- testing a single map unit

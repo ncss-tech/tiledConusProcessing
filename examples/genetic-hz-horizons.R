@@ -12,7 +12,7 @@ q <- "SELECT
     INNER JOIN chorizon ON component.cokey = chorizon.cokey
     WHERE legend.areasymbol != 'US' 
     AND majcompflag = 'Yes' 
-    AND hzname LIKE 'E%';"
+    AND hzname LIKE 'E';"
 
 x <- SDA_query(q)
 nrow(x)
