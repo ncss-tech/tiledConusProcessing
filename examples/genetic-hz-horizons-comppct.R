@@ -1,44 +1,59 @@
 library(soilDB)
 library(terra)
 library(sf)
-library(viridisLite)
-library(rasterVis)
 
-## "TODO: generalize to return summed component percent matching criteria
+
+## Notes:
+# * this approach fails when components use old-style H1, H2, H3, etc. notation for horizon names
+#
 
 q <- "SELECT
-    DISTINCT component.mukey
+    mapunit.mukey, SUM(comppct_r) AS pct
     FROM legend
     INNER JOIN mapunit ON mapunit.lkey = legend.lkey
     INNER JOIN component ON component.mukey = mapunit.mukey
-    INNER JOIN chorizon ON component.cokey = chorizon.cokey
+    -- collect unique component keys where any horizon matches pattern
+    -- inner join is an implicit filter
+    INNER JOIN (
+      SELECT DISTINCT component.cokey
+      FROM 
+      component INNER JOIN chorizon ON component.cokey = chorizon.cokey
+      -- pattern matching on horizon name
+      WHERE hzname LIKE 'E%'
+    ) AS hz ON component.cokey = hz.cokey
     WHERE legend.areasymbol != 'US' 
-    AND majcompflag = 'Yes' 
-    AND hzname LIKE 'E%';"
+    -- testing a single map unit
+    -- AND mapunit.mukey = '295570'
+    GROUP BY mapunit.mukey ;"
 
 x <- SDA_query(q)
+
+# 59696 rows
 nrow(x)
+head(x)
+
 
 # TODO: proper encoding of NODATA
 
-# function applied to each pixel
-# 2: TRUE
-# 1: FALSE
-# 0: NODATA
+# function applied at each pixel
+# lookup 'pct' for each mukey
 .f <- function(i) {
-  ifelse(i %in% x$mukey, 2, 1)
+  
+  .idx <- match(i, x$mukey)
+  .res <- x$pct[.idx]
+  
+  return(.res)
 }
-
 
 # CONUS gNATSGO 30m grid
 g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
 # ~ 17 minutes
-system.time(r <- app(g, fun = .f, filename = 'E-horizon.tif', overwrite = TRUE))
+system.time(r <- app(g, fun = .f, filename = 'E-horizon-pct.tif', overwrite = TRUE))
 
 # 10x aggregation
 # ~ 4.8 minutes
-system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'E-horizon-300m.tif', overwrite = TRUE))
+system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'E-horizon-pct-300m.tif', overwrite = TRUE))
 
 
 
