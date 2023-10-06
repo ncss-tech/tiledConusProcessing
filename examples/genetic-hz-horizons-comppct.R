@@ -49,12 +49,18 @@ head(x)
 g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
 # ~ 17 minutes
-system.time(r <- app(g, fun = .f, filename = 'E-horizon-pct.tif', overwrite = TRUE))
+system.time(r <- app(g, fun = .f, filename = 'E-horizon-pct.tif', overwrite = TRUE, datatype = 'BYTE'))
 
 # 10x aggregation
 # ~ 4.8 minutes
 system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'E-horizon-pct-300m.tif', overwrite = TRUE))
 
+## TODO: aggregate using sum, and then normalize to new grid size
+# # aggregate to 5x larger grid, sum of cell percent cover
+# a <- aggregate(x, fact = 5, fun = sum, na.rm = TRUE)
+# 
+# # rescale percent cover to larger grid size
+# a <- a / 5^2
 
 
 
@@ -73,15 +79,13 @@ mu <- mukey.wcs(aoi = a, db = 'gssurgo')
 # extract RAT for thematic mapping
 rat <- cats(mu)[[1]]
 
-rat$condition <- factor(as.integer(rat$mukey) %in% as.integer(x$mukey), levels = c('FALSE', 'TRUE'))
-
-table(rat$condition)
+rat <- merge(rat, x, by = 'mukey', all.x = TRUE, sort = FALSE)
 
 levels(mu) <- rat
 
-activeCat(mu) <- 'condition'
-mu.stack <- catalyze(mu)[['condition']]
-plot(mu.stack, axes = FALSE, maxcell = 1e5, col = mako(2))
+
+E.hz.pct <- as.numeric(mu, index = 'pct')
+plot(E.hz.pct, axes = FALSE, maxcell = 1e5, col = hcl.colors(100, palette = 'mako'))
 
 
 
