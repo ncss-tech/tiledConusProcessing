@@ -42,8 +42,9 @@ g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif$', full.
 # map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = 'wei', top = 0, bottom = 25, output.dir = output.dir, .progress = TRUE)
 
 
-# init multiple cores
-plan(multisession)
+## init multiple cores
+# plan(multicore) # linux
+plan(multisession) # windows
 
 system.time(
   z <- future_map(

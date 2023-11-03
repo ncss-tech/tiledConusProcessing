@@ -49,7 +49,7 @@ head(x)
 g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
 # ~ 17 minutes
-system.time(r <- app(g, fun = .f, filename = 'E-horizon-pct.tif', overwrite = TRUE, datatype = 'BYTE'))
+system.time(r <- app(g, fun = .f, filename = 'E-horizon-pct.tif', overwrite = TRUE, datatype = 'INT1U'))
 
 # 10x aggregation
 # ~ 4.8 minutes
