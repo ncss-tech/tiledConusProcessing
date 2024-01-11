@@ -2,7 +2,7 @@
 ## This is not aggregation, only for rapid preview of thematic maps and testing.
 ## 
 ## D.E Beaudette
-## 2023-02-23
+## 2024-01-11
 
 library(soilDB)
 library(terra)
@@ -38,7 +38,7 @@ a <- as.factor(a)
 # extract rat
 rat <- cats(a)[[1]]
 
-## hmmm: 1411 STATSGO mukey remain...why?
+## hmmm: 1273 STATSGO mukey remain...why?
 length(which(s$mukey %in% rat$ID))
 
 
