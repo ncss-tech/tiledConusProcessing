@@ -18,3 +18,8 @@ output.dir <- 'temporary-mukey-tiles'
 # gNATSGO: 7 minutes
 tileMukeyGrid(mu = mu, tg = tg, output.dir = output.dir)
 
+
+## cleanup
+rm(list = ls())
+gc(reset = TRUE)
+
