@@ -20,6 +20,9 @@
 #  * 30 minutes for 3 hz level properties
 #
 
+# 2024-03-26:
+#  * 68 seconds / tile (6 hz level properties)
+#  * 1 hour for 6 hz level properties (SDA / slow internet)
 
 ## create tile systems
 ## these are already in place
@@ -37,6 +40,7 @@ source('process-tiles.R')
 
 
 ## mosaic / re-sample tiles
+# ~ minutes (6 properties)
 # variables stored in config.R
 source('mosaic-tiles.R')
 

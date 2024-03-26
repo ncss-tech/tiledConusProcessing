@@ -26,25 +26,30 @@ mosaicProperty <- function(i, input.dir, output.dir) {
 
 
 ## TODO: optionally wrap in safely() for simpler error reporting
+## TODO: what do 0's in the grid represent?
 
 makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   # current tile
   x <- rast(tiles[i])
   
-  ## TODO: convert to as.factor()
-  ##       --> see conus soil color code for latest approach
-  # init RAT
-  # cannot contain NA or NaN
-  uids <- terra::unique(x)[, 1]
-  rat <- data.frame(value = uids, mukey = uids)
-  rat <- na.omit(rat)
-  levels(x)[[1]] <- rat
+  # # init RAT
+  # # cannot contain NA or NaN
+  # uids <- terra::unique(x)[, 1]
+  # rat <- data.frame(value = uids, mukey = uids)
+  # rat <- na.omit(rat)
+  # levels(x)[[1]] <- rat
+  
+  # init grid of IDs + RAT
+  x <- as.factor(x)
   
   # set layer name in object
   names(x) <- 'mukey'
   
   # extract RAT for thematic mapping
   rat <- cats(x)[[1]]
+  
+  # re-name mukey column for consistency across input grids
+  names(rat)[2] <- 'mukey'
   
   # weighted mean over components to account for large misc. areas
   # depth-weighted average over top--bottom
@@ -81,28 +86,32 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   
   # merge aggregate data into RAT
   rat <- merge(rat, p, by.x = 'mukey', by.y = 'mukey', sort = FALSE, all.x = TRUE)
-  levels(x) <- rat
+  
+  # re-pack RAT
+  # `ID` must be the first column in the RAT
+  levels(x) <- rat[, c('ID', 'mukey', vars)]
   
   # ~ 20 minutes per tile, when using 10x10 tiles
   # ~ 2 minutes per tile, when using 20x20 tiles
   
-  ## TODO: possibly faster
-  # iteratively:
-  # as.numeric(x, index = vars)
-  
   # grid + RAT -> stack of numerical grids
-  x.stack <- catalyze(x)
+  # 35 seconds
+  # system.time(x.stack <- catalyze(x))
   
-  ## TODO: consider aggregation at this step
+  # 4.8 seconds / variable
+  # system.time(x.stack <- as.numeric(x, index = vars[1]))
   
   # continuous properties
   for (.var in vars) {
     # automatic use of LZW compression
-    writeRaster(x.stack[[.var]], filename = file.path(output.dir, sprintf('%s_%03d.tif', .var, i)), overwrite = TRUE)
+    .x <- as.numeric(x, index = .var)
+    writeRaster(.x, filename = file.path(output.dir, sprintf('%s_%03d.tif', .var, i)), overwrite = TRUE)
   }
   
+  ## TODO: categorical properties
+  
   ## consider removing terra objects and garbage-collecting
-  rm(x, x.stack)
+  rm(x, .x)
   gc(reset = TRUE)
  
   # when SDA throws an error, tile ID + rat
@@ -135,6 +144,8 @@ tileMukeyGrid <- function(mu, tg, output.dir) {
   for (i in 1:n) {
     # crop to current tile
     x <- crop(mu, tg[i, ])
+    
+    ## TODO: consider converting into a factor here
     
     # save tile as UInt32
     fn <- file.path(output.dir, sprintf('tile-%03d.tif', i))
