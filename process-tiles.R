@@ -1,8 +1,15 @@
+## Prepare thematic 
+## 2023-03-27
+## D.E. Beaudette
+
 
 ## TODO: careful with NA handling
 ## TODO: catch failed SDA requests in a second pass
 ## -----> why does this happen?
 
+
+library(DBI)
+library(RSQLite)
 
 library(purrr)
 library(furrr)
@@ -13,8 +20,8 @@ library(soilDB)
 source('local-functions.R')
 source('config.R')
 
-# mukey grid
-mu <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
+# mukey grid system
+mu <- rast(grid.system)
 
 # load optimized grid, with all-NA tiles removed
 g <- readRDS(file = 'E:/working_copies/tiledConusProcessing/A_grid.rds')
@@ -38,8 +45,13 @@ g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif$', full.
 # 
 # map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir, .progress = TRUE)
 
+## STATSGO 300m, tile 90, all NA
+# map(.x = 90, .f = makeThematicTileSDA, tiles = g.files, vars = v, top = 0, bottom = 25, output.dir = output.dir, .progress = TRUE)
+
 ## component-level data: top/bottom arguments are ignored
 # map(.x = 9, .f = makeThematicTileSDA, tiles = g.files, vars = 'wei', top = 0, bottom = 25, output.dir = output.dir, .progress = TRUE)
+
+
 
 
 ## init multiple cores
@@ -68,6 +80,8 @@ zz <- z[idx]
 
 
 if (length(zz) > 0) {
+  
+  print('second pass...')
   
   ## TODO: check on these
   sapply(zz, function(i) {

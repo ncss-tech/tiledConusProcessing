@@ -1,4 +1,7 @@
-mosaicProperty <- function(i, input.dir, output.dir) {
+
+## TODO: sync aggregation functions with output data type
+
+mosaicProperty <- function(i, input.dir, output.dir, do.aggregate = TRUE, agg.fact = 9, agg.fun = c('modal', 'mean')) {
   
   # current tile set
   fl <- list.files(path = input.dir, pattern = i, full.names = TRUE)
@@ -14,7 +17,9 @@ mosaicProperty <- function(i, input.dir, output.dir) {
   writeRaster(x, filename = f.highres, overwrite = TRUE)
   
   # optionally aggregate directly to file
-  aggregate(x, fact = 9, fun = 'modal', na.rm = TRUE, filename = f, overwrite = TRUE)
+  if(do.aggregate) {
+    aggregate(x, fact = agg.fact, fun = agg.fun, na.rm = TRUE, filename = f, overwrite = TRUE)
+  }
   
   rm(x)
   gc(reset = TRUE)
@@ -29,15 +34,9 @@ mosaicProperty <- function(i, input.dir, output.dir) {
 ## TODO: what do 0's in the grid represent?
 
 makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
+  
   # current tile
   x <- rast(tiles[i])
-  
-  # # init RAT
-  # # cannot contain NA or NaN
-  # uids <- terra::unique(x)[, 1]
-  # rat <- data.frame(value = uids, mukey = uids)
-  # rat <- na.omit(rat)
-  # levels(x)[[1]] <- rat
   
   # init grid of IDs + RAT
   x <- as.factor(x)
@@ -46,7 +45,20 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   names(x) <- 'mukey'
   
   # extract RAT for thematic mapping
+  # this may be NULL if all cells are NA (STATSGO 300m, tile 90)
   rat <- cats(x)[[1]]
+  
+  # check for an entirely NULL tile  (STATSGO 300m, tile 90)
+  if(is.null(rat)) {
+    # write blank tiles
+    for (.var in vars) {
+      # automatic use of LZW compression
+      writeRaster(x, filename = file.path(output.dir, sprintf('%s_%03d.tif', .var, i)), overwrite = TRUE)
+    }
+    
+    # next tile
+    return(NULL)
+  }
   
   # re-name mukey column for consistency across input grids
   names(rat)[2] <- 'mukey'
@@ -62,7 +74,9 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
       top_depth = top,
       bottom_depth = bottom,
       include_minors = TRUE, 
-      miscellaneous_areas = FALSE
+      miscellaneous_areas = FALSE,
+      # currently returns SQLite error: "Error: near "INTO": syntax error"
+      dsn = local.tabularDB
     ), silent = TRUE
   )
   
