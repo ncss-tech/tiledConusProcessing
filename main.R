@@ -40,7 +40,7 @@ source('process-tiles.R')
 
 
 ## mosaic / re-sample tiles
-# ~ minutes (6 properties)
+# ~ 36 minutes (6 properties)
 # variables stored in config.R
 source('mosaic-tiles.R')
 
