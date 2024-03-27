@@ -21,17 +21,28 @@
 #
 
 # 2024-03-26:
+#
+# gNATSGO 30m:
 #  * 68 seconds / tile (6 hz level properties)
 #  * 1 hour for 6 hz level properties (SDA / slow internet)
+
+# STATSGO 300m:
+# * 74 seconds for 6 hz level properties (SDA / slow internet)
+# * 
 
 ## create tile systems
 ## these are already in place
 # source('tiling-grid-A.R')
 
 ## tile CONUS mukey grid
-## only need to do this once per FY snapshot
-# ~ 10 minutes
-# source('tile-mukey-grid.R')
+# only need to do this once per FY snapshot
+# synced with other operations via config.R
+#
+# gSSURGO/gNATSGO 30m : ~ 10 minutes
+# STATSGO 300m : ~ 2 minutes
+system.time(
+  source('tile-mukey-grid.R')
+)
 
 
 ## process tiles, create thematic grid tiles
@@ -40,7 +51,9 @@ source('process-tiles.R')
 
 
 ## mosaic / re-sample tiles
-# ~ 36 minutes (6 properties)
+# gNATSGO 30m: ~ 36 minutes (6 properties)
+# STATSGO 300m: 32 seconds (6 properties)
+#
 # variables stored in config.R
 source('mosaic-tiles.R')
 
