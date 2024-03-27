@@ -55,6 +55,9 @@ library(terra)
 # )
 
 
+## TODO: more testing with SSURGO BBOX
+## ALSO: this syntax sucks
+
 ## toggle STATSGO | SSURGO | both
 sql <- "WITH a AS (
           SELECT m.mukey, c.cokey,

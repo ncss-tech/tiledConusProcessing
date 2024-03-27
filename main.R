@@ -4,6 +4,8 @@
 
 ## TODO:
 # * profile CPU, RAM, disk, network resources
+# * finish categorical variable handling
+# * better selection of aggregation type
 # * 
 
 

@@ -107,6 +107,12 @@ WHERE type = 'index' AND tbl_name = 'chorizon' ;")
 # list tables
 dbListTables(db)
 
+# STATSGO
+dbGetQuery(db, "SELECT mukey, muname, mukind FROM mapunit WHERE mukey  = '658083' ;")
+
+# SSURGO
+dbGetQuery(db, "SELECT mukey, muname, mukind FROM mapunit WHERE mukey  = '2600481' ;")
+
 # simple query
 dbGetQuery(db, 'SELECT cokey, compname, comppct_r, majcompflag FROM component LIMIT 5;')
 
