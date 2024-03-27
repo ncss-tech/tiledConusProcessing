@@ -45,7 +45,7 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   names(x) <- 'mukey'
   
   # extract RAT for thematic mapping
-  # this may be NULL if all cells are NA (STATSGO 300m, tile 90)
+  # will be NULL if all cells are NA
   rat <- cats(x)[[1]]
   
   # check for an entirely NULL tile  (STATSGO 300m, tile 90)
@@ -81,7 +81,7 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   )
   
   if (inherits(p, 'try-error')) {
-    message('SDA query failed, likely hit resource constraint')
+    message('SDA query failed')
     
     # save tile ID + associated RAT
     error.log <- list(i = i, rat = rat)
