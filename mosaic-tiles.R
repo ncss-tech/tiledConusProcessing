@@ -1,12 +1,13 @@
-## Mosaic 30m tiles and save second version after aggregation to 270m or similar
-## 2022-07-21
+## Mosaic tiles and save second version after aggregation to 270m or similar
+## 2023-03-27
 ## D.E. Beaudette
 
 
 ## TODO:
 #  * categorical variables
 
-# ~ 1 hour for 7 properties
+# gNATSGO 30m: ~ 1 hour for 7 properties
+# STATSGO 300m: ~ 
 
 library(purrr)
 library(furrr)
@@ -20,6 +21,10 @@ input.dir <- 'processed-tiles'
 output.dir <- 'results'
 dir.create(output.dir)
 
+
+# aggregate ?
+.agg <- FALSE
+
 # test: works
 # map('sandtotal_r', .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir)
 
@@ -28,7 +33,7 @@ dir.create(output.dir)
 # 4 workers -> 28GB RAM required
 plan(multisession, workers = 4)
 
-system.time(z <- future_map(v, .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir, .progress = TRUE))
+system.time(z <- future_map(v, .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir, do.aggregate = .agg, .progress = TRUE))
 
 # stop parallel back-ends
 plan(sequential)
