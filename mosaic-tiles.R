@@ -1,13 +1,11 @@
 ## Mosaic tiles and save second version after aggregation to 270m or similar
-## 2023-03-27
+## 2024-04-09
 ## D.E. Beaudette
 
 
 ## TODO:
 #  * categorical variables
 
-# gNATSGO 30m: ~ 1 hour for 7 properties
-# STATSGO 300m: ~ 
 
 library(purrr)
 library(furrr)
@@ -30,8 +28,9 @@ dir.create(output.dir)
 
 # init multiple cores
 # aggregate seems to use multiple cores, so only start 4 concurrent operations
-# 4 workers -> 28GB RAM required
-plan(multisession, workers = 4)
+# 4 workers  -> 28GB RAM required
+# 16 workers -> 60GB RAM required
+plan(multisession, workers = 16)
 
 system.time(z <- future_map(v, .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir, do.aggregate = .agg, .progress = TRUE))
 

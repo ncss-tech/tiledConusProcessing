@@ -20,8 +20,10 @@ local.tabularDB <- NULL
 # grid.system <- 'E:/gis_data/mukey-grids/gSSURGO-mukey.tif'
 
 # STATSGO
-grid.system <- 'E:/gis_data/mukey-grids/gSTATSGO-mukey.tif'
+# grid.system <- 'E:/gis_data/mukey-grids/gSTATSGO-mukey.tif'
 
+# gSSURGO SoilWeb
+grid.system <- '/data1/website/wcs-files/gSSURGO-mukey.tif'
 
 
 ## variables

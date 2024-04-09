@@ -32,6 +32,10 @@
 # * 74 seconds for 6 hz level properties (SDA / slow internet)
 # * 
 
+# gSSURGO 30m (SoilWeb 4-1)
+#  * 43 minutes for 6 hz level properties (SDA)
+#
+
 ## create tile systems
 ## these are already in place
 # source('tiling-grid-A.R')
@@ -49,15 +53,20 @@ system.time(
 
 ## process tiles, create thematic grid tiles
 # variables stored in config.R
-source('process-tiles.R')
-
+system.time(
+  source('process-tiles.R')
+)
 
 ## mosaic / re-sample tiles
-# gNATSGO 30m: ~ 36 minutes (6 properties)
-# STATSGO 300m: 32 seconds (6 properties)
+# gNATSGO 30m:        36 minutes (6 properties)
+# STATSGO 300m:       32 seconds (6 properties)
+#
+# gSSURGO (SoilWeb):  10 minutes (6 properties)
 #
 # variables stored in config.R
-source('mosaic-tiles.R')
+system.time(
+  source('mosaic-tiles.R')
+)
 
 
 
