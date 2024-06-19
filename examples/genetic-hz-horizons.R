@@ -31,12 +31,16 @@ nrow(x)
 # CONUS gNATSGO 30m grid
 g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
-# ~ 17 minutes
-system.time(r <- app(g, fun = .f, filename = 'E-horizon.tif', overwrite = TRUE))
+# ~ 11 minutes
+system.time(
+  r <- app(g, fun = .f, filename = 'E-horizon.tif', overwrite = TRUE, wopt = list(datatype = "INT1U"))
+)
 
 # 10x aggregation
-# ~ 4.8 minutes
-system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'E-horizon-300m.tif', overwrite = TRUE))
+# ~ 2 minutes
+system.time(
+  a <- aggregate(r, fact = 10, fun = 'modal', filename = 'E-horizon-300m.tif', overwrite = TRUE, wopt = list(datatype = "INT1U"))
+)
 
 
 
