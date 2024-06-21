@@ -6,7 +6,7 @@
 # * profile CPU, RAM, disk, network resources
 # * finish categorical variable handling
 # * better selection of aggregation type
-# * 
+# * add depth interval to file name
 
 
 
@@ -53,11 +53,15 @@ system.time(
 
 ## process tiles, create thematic grid tiles
 # variables stored in config.R
+# 
+# gSSURGO 30m:        12 minutes (1 property)
+#
 system.time(
   source('process-tiles.R')
 )
 
 ## mosaic / re-sample tiles
+# gSSURGO 30m:        10 minutes (1 property)
 # gNATSGO 30m:        36 minutes (6 properties)
 # STATSGO 300m:       32 seconds (6 properties)
 #
