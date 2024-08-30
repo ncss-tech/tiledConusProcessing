@@ -9,7 +9,7 @@ library(furrr)
 library(lattice)
 library(latticeExtra)
 library(tactile)
-
+library(stringi)
 
 getMinClass <- function(ssa) {
   
@@ -60,7 +60,7 @@ x <- getMinClass('CA630')
 knitr::kable(head(x), row.names = FALSE)
 
 x$txmn <- factor(x$txmn)
-dotchart(sort(table(x$txmn), decreasing = FALSE))
+dotplot(sort(table(x$txmn), decreasing = FALSE), par.settings = tactile.theme(plot.symbol = list(cex = 1.25)))
 
 
 ## SSURGO, + STATSGO
@@ -81,11 +81,21 @@ head(x)
 # FY24: 3226 rows
 nrow(x)
 
+# keep track of STATSGO mukey
+sql <- "SELECT mukey
+FROM legend as l
+JOIN mapunit as m ON l.lkey = m.lkey
+WHERE areasymbol = 'US' ;"
+
+statsgo.mukeys <- SDA_query(sql)
+nrow(statsgo.mukeys)
+
+
 ## parallel processing
 # init parallel processing, works on macos and windows
 plan(multisession)
 
-# ~ 93 seconds
+# ~ 40 seconds
 system.time(m <- future_map(x$areasymbol, safely(getMinClass), .progress = TRUE))
 
 # stop back-ends
@@ -108,6 +118,12 @@ str(m.res)
 nrow(m.res)
 
 
+# mark SSURGO / STATSGO
+m.res$source <- 'SSURGO'
+m.res$source[which(m.res$mukey %in% statsgo.mukeys$mukey)] <- 'STATSGO'
+table(m.res$source)
+
+
 ## process raster
 
 ## TODO: think about levels / simplification
@@ -118,13 +134,62 @@ m.res$txmn <- factor(m.res$txmn)
 m.res$i <- as.numeric(m.res$txmn)
 
 
+## graphical check
+
 options(scipen = 20)
+
 dotplot(
-  sort(table(m.res$txmn), decreasing = FALSE), 
-  cex = 0.66, 
+  sort(table(m.res$txmn[which(m.res$source == 'SSURGO')]), decreasing = FALSE), 
+  main = 'SSURGO',
+  par.settings = tactile.theme(plot.symbol = list(cex = 0.66)), 
   scales = list(x = list(log = 10)), 
   xscale.components = xscale.components.log10ticks
 )
+
+dotplot(
+  sort(table(m.res$txmn[which(m.res$source == 'STATSGO')]), decreasing = FALSE), 
+  main = 'STATSGO',
+  par.settings = tactile.theme(plot.symbol = list(cex = 0.66)), 
+  scales = list(x = list(log = 10)), 
+  xscale.components = xscale.components.log10ticks
+)
+
+# subset to SSURGO and > 10 cases
+tab <- table(m.res$txmn[which(m.res$source == 'SSURGO')])
+tab <- tab[tab > 10]
+tab <- sort(tab)
+
+dotplot(
+  tab, 
+  main = 'SSURGO Map Units - Dominant Mineralogy Class', sub = 'Tax Min Class >10 cases',
+  xlab = 'Frequency',
+  par.settings = tactile.theme(plot.symbol = list(cex = 0.66)), 
+  scales = list(x = list(log = 10)), 
+  xscale.components = xscale.components.log10ticks
+)
+
+
+## focus on near-surface min. class only
+stri_split_fixed(c('mixed', 'glassy over isotic'), pattern = ' over ', n = 2, simplify = TRUE)
+
+txmn.split <- stri_split_fixed(m.res$txmn, pattern = ' over ', n = 2, simplify = TRUE)
+# head(txmn.split)
+
+m.res$txmn_simple <- factor(txmn.split[, 1])
+m.res$i_simple <- as.numeric(m.res$txmn_simple)
+
+tab <- table(m.res$txmn_simple[which(m.res$source == 'SSURGO')])
+tab <- sort(tab)
+
+dotplot(
+  tab, 
+  main = 'SSURGO Map Units - Dominant Mineralogy Class (simplified)',
+  xlab = 'Frequency',
+  par.settings = tactile.theme(plot.symbol = list(cex = 0.66)), 
+  scales = list(x = list(log = 10)), 
+  xscale.components = xscale.components.log10ticks
+)
+
 
 
 ## TODO: encode / use factors here if possible
@@ -132,8 +197,9 @@ dotplot(
 # lookup integer-coded factor
 .f <- function(i) {
   
+  # simplified mineralogy class code
   .idx <- match(i, m.res$mukey)
-  .res <- m.res$i[.idx]
+  .res <- m.res$i_simple[.idx]
   
   return(.res)
 }
@@ -147,47 +213,74 @@ g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
 # STATSGO 300m: ~ 10 seconds
 # gNATSGO 30m: ~ 10 minutes
-system.time(r <- app(g, fun = .f, filename = 'examples/gNATSGO-minclass.tif', overwrite = TRUE))
+# wastefully saves as FLT4S
+system.time(r <- app(g, fun = .f, filename = 'gNATSGO-minclass.tif', overwrite = TRUE))
 
-# this takes a little while, not re
+# this takes a little while
 r <- as.factor(r)
 rat <- levels(r)[[1]]
-rat$txmn <- levels(m.res$txmn)[as.integer(rat$lyr.1)]
+rat$txmn_simple <- levels(m.res$txmn_simple)
 levels(r) <- rat
 
-activeCat(r) <- 'txmn'
+activeCat(r) <- 'txmn_simple'
 plot(r, col = hcl.colors(nrow(rat)), mar = c(1, 1, 1, 10), axes = FALSE)
+
+# only 35 categories, use BYTE
+writeRaster(r, filename = 'gNATSGO-minclass-factor.tif', overwrite = TRUE, datatype = 'INT1U')
+
+
+# why won't this work?
+a <- aggregate(r, fact = 10, fun = modal)
+
+## TODO: downgrade to integers, take modal, factor, save
+
+
+## custom function .. slow
+
+# fmod <- function(x) {
+#   
+#   x <- x[!is.na(x)]
+#   if (length(x) == 0) return(NA)
+#   
+#   uv <- unique(x)
+#   
+#   m <- uv[which.max(tabulate(match(x, uv)))]
+#   
+#   return(m)
+# }
+# 
+# a <- aggregate(r, fact = 10, fun = fmod)
 
 
 
 
 ## check within AOI
-
-
-# make a bounding box and assign a CRS (4326: GCS, WGS84)
-a <- vect('POLYGON((-118.6848 36.7983,-118.6848 36.9223,-118.4306 36.9223,-118.4306 36.7983,-118.6848 36.7983))', crs = 'epsg:4326')
-
-# fetch gSSURGO map unit keys at native resolution (30m)
-mu <- mukey.wcs(aoi = a, db = 'gssurgo')
-
-# extract RAT for thematic mapping
-rat <- cats(mu)[[1]]
-
-rat <- merge(rat, x, by = 'mukey', all.x = TRUE, sort = FALSE)
-
-table(rat$invesintens)
-
-# re-pack rat
-levels(mu) <- rat
-
-activeCat(mu) <- 'invesintens'
-plot(mu, axes = FALSE, col = hcl.colors(n = 4, palette = 'spectral'))
-
-# use integer coding of factor
-invesintens <- as.numeric(mu, index = 'i')
-plot(invesintens, axes = FALSE, maxcell = 1e5, col = hcl.colors(10, 'mako'))
-
-
+# 
+# 
+# # make a bounding box and assign a CRS (4326: GCS, WGS84)
+# a <- vect('POLYGON((-118.6848 36.7983,-118.6848 36.9223,-118.4306 36.9223,-118.4306 36.7983,-118.6848 36.7983))', crs = 'epsg:4326')
+# 
+# # fetch gSSURGO map unit keys at native resolution (30m)
+# mu <- mukey.wcs(aoi = a, db = 'gssurgo')
+# 
+# # extract RAT for thematic mapping
+# rat <- cats(mu)[[1]]
+# 
+# rat <- merge(rat, x, by = 'mukey', all.x = TRUE, sort = FALSE)
+# 
+# table(rat$invesintens)
+# 
+# # re-pack rat
+# levels(mu) <- rat
+# 
+# activeCat(mu) <- 'invesintens'
+# plot(mu, axes = FALSE, col = hcl.colors(n = 4, palette = 'spectral'))
+# 
+# # use integer coding of factor
+# invesintens <- as.numeric(mu, index = 'i')
+# plot(invesintens, axes = FALSE, maxcell = 1e5, col = hcl.colors(10, 'mako'))
+# 
+# 
 
 
 
