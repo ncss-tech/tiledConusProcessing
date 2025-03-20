@@ -2,6 +2,9 @@ library(soilDB)
 library(terra)
 library(sf)
 
+# enforce case sensitivity
+# https://stackoverflow.com/questions/14962419/is-the-like-operator-case-sensitive-with-sql-server
+
 
 ## Notes:
 # * this approach fails when components use old-style H1, H2, H3, etc. notation for horizon names
@@ -19,7 +22,7 @@ q <- "SELECT
       FROM 
       component INNER JOIN chorizon ON component.cokey = chorizon.cokey
       -- pattern matching on horizon name
-      WHERE hzname LIKE 'E'
+      WHERE hzname COLLATE Latin1_General_CI_AS LIKE '%O%'
     ) AS hz ON component.cokey = hz.cokey
     WHERE legend.areasymbol != 'US' 
     -- testing a single map unit
@@ -28,7 +31,8 @@ q <- "SELECT
 
 x <- SDA_query(q)
 
-# 59696 rows
+# E horizon: 84353 rows
+# O horizon: 52697 rows
 nrow(x)
 head(x)
 
@@ -48,12 +52,32 @@ head(x)
 # CONUS gNATSGO 30m grid
 g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
 
-# ~ 17 minutes
-system.time(r <- app(g, fun = .f, filename = 'E-horizon-pct.tif', overwrite = TRUE, datatype = 'INT1U'))
+# ~ 8 minutes
+system.time(
+  r <- app(
+    g, 
+    fun = .f, 
+    filename = 'examples/O-horizon-pct.tif', 
+    overwrite = TRUE, 
+    wopt = list(datatype = 'INT1U')
+  )
+)
 
 # 10x aggregation
-# ~ 4.8 minutes
-system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'E-horizon-pct-300m.tif', overwrite = TRUE))
+# ~ 1.7 minutes
+system.time(
+  a <- aggregate(
+    r, 
+    fact = 10, 
+    fun = 'median', na.rm = TRUE, 
+    filename = 'examples/O-horizon-pct-300m.tif', 
+    overwrite = TRUE,
+    wopt = list(datatype = 'INT1U')
+  )
+)
+
+
+
 
 ## TODO: aggregate using sum, and then normalize to new grid size
 # # aggregate to 5x larger grid, sum of cell percent cover
