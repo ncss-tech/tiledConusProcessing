@@ -8,7 +8,7 @@
 # FY24 SSURGO (uncompressed): 217GB
 # Latest STATSGO (uncompressed): 1GB
 
-# Final SSURGO + STATSGO tabular database: 14GB
+# Final SSURGO + STATSGO tabular database: 14GB (2.1GB gzip)
 
 
 ## will fail on a slow connection, WSS / SDA are shutdown most nights
@@ -28,7 +28,7 @@ library(DBI)
 # local machine
 .exdir1 <- 'e:/temp/statsgo'
 .exdir2 <- 'e:/temp/ssurgo'
-.dbfile <- 'e:/temp/ssurgo-combined.sqlite'
+.dbfile <- 'e:/gis_data/SSURGO-STATSGO-tabular/ssurgo-combined.sqlite'
 
 
 ## SSAs to iterate over
