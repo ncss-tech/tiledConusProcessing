@@ -5,7 +5,7 @@
 ## database selector
 
 # local SQLite tabular database
-# local.tabularDB <- 'e:/temp/ssurgo-combined.sqlite'
+# local.tabularDB <- 'e:/gis_data/SSURGO-STATSGO-tabular/ssurgo-combined.sqlite'
 
 # SDA
 local.tabularDB <- NULL

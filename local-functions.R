@@ -75,7 +75,6 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
       bottom_depth = bottom,
       include_minors = TRUE, 
       miscellaneous_areas = FALSE,
-      # currently returns SQLite error: "Error: near "INTO": syntax error"
       dsn = local.tabularDB
     ), silent = TRUE
   )
