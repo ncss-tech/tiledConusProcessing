@@ -11,6 +11,9 @@
 # Final SSURGO + STATSGO tabular database: 14GB (2.1GB gzip)
 
 
+## TODO: consider adding RSS tabular data
+
+
 ## will fail on a slow connection, WSS / SDA are shutdown most nights
 
 library(soilDB)

@@ -1,3 +1,7 @@
+## Use an externally-created mukey--value LUT for the creation of thematic soil property grids
+## 2025-04-25
+## D.E. Beaudette
+
 library(terra)
 
 # gNATSGO mukey--property LUT from Chad
