@@ -17,6 +17,8 @@ q <- "SELECT
 x <- SDA_query(q)
 nrow(x)
 
+head(x)
+
 # TODO: proper encoding of NODATA
 
 # function applied to each pixel

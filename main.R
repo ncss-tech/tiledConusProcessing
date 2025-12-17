@@ -3,6 +3,7 @@
 ##
 
 ## TODO:
+# * use fSSURGO instead of gSTATSGO
 # * profile CPU, RAM, disk, network resources
 # * finish categorical variable handling
 # * better selection of aggregation type
@@ -36,9 +37,7 @@
 #  * 43 minutes for 6 hz level properties (SDA)
 #
 
-# 2025-03-01
-#
-#
+# 2025-12-17
 #
 #
 

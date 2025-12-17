@@ -13,8 +13,11 @@ local.tabularDB <- NULL
 
 ## grid system
 
+# fSSURGO
+grid.system <- 'E:/gis_data/mukey-grids/fSSURGO-mukey.tif'
+
 # gNATSGO
-grid.system <- 'E:/gis_data/mukey-grids/gNATSGO-mukey.tif'
+# grid.system <- 'E:/gis_data/mukey-grids/gNATSGO-mukey.tif'
 
 # gSSURGO
 # grid.system <- 'E:/gis_data/mukey-grids/gSSURGO-mukey.tif'

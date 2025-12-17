@@ -1,15 +1,25 @@
+##
+##
+##
+
 
 ## Notes:
-# if working with a huge directory of .zip files
+# on 4-1, re-use SSA .zip archives
+# requires 290GB
 # ~ 7 minutes on 4-1
 # time parallel --eta unzip ::: *.zip
+#
+# rm *.zip
+# 
+
 
 # A lot of free space is required for all of SSURGO
 # FY24 SSURGO (uncompressed): 217GB
 # Latest STATSGO (uncompressed): 1GB
 
-# Final SSURGO + STATSGO tabular database: 14GB (2.1GB gzip)
+# Final SSURGO + STATSGO tabular database: 14GB (2.1GB gzipped)
 
+## TODO: integrate with SoilWeb refresh cycle / scripts
 
 ## TODO: consider adding RSS tabular data
 
@@ -46,7 +56,8 @@ nrow(x)
 # * must increase curl timeout on a slow connection (STATSGO will fail with defaults)
 # * parallel downloads would be faster (1 hour on soilmap 2-1)
 
-# STATSGO
+
+## STATSGO
 #  * gov machine, Sonora MLRA office: 13 minutes
 #  * soilmap 4-1: 11 minutes
 options('soilDB.timeout' = 1e6)
@@ -54,10 +65,12 @@ system.time(
   downloadSSURGO(areasymbols = 'US', exdir = .exdir1, include_template = FALSE, remove_zip = TRUE, extract = TRUE, overwrite = TRUE, db = 'STATSGO')
 )
 
-# SSURGO
-system.time(
-  downloadSSURGO(areasymbols = x$areasymbol, exdir = .exdir2, include_template = FALSE, remove_zip = TRUE, extract = TRUE, overwrite = TRUE, db = 'SSURGO')  
-)
+## SSURGO
+# 
+# not really tested, since I already have a copy of these files in /ssa/fy25
+# system.time(
+#   downloadSSURGO(areasymbols = x$areasymbol, exdir = .exdir2, include_template = FALSE, remove_zip = TRUE, extract = TRUE, overwrite = TRUE, db = 'SSURGO')  
+# )
 
 
 
@@ -71,27 +84,32 @@ unlink(.dbfile)
 
 # first pass, STATSGO
 #  * gov machine: ~ 91 seconds
-#  * soilweb 4-1: ~ 71 seconds
+#  * soilweb 4-1: ~ 32 seconds
 system.time(
-  createSSURGO(filename = .dbfile, exdir = .exdir1, include_spatial = FALSE, overwrite = TRUE)
+  createSSURGO(filename = .dbfile, exdir = .exdir1, include_spatial = FALSE, overwrite = FALSE)
 )
 
 
 # second pass, SSURGO
 #  * gov machine: (not possible yet)
-#  * soilweb 4-1: 32 minutes
+#  * soilweb 4-1: 106 minutes
 system.time(
   createSSURGO(filename = .dbfile, exdir = .exdir2, include_spatial = FALSE, overwrite = FALSE)
 )
 
-
+# sqlite file is 65GB
 
 ## connect to finish up
 db <- dbConnect(RSQLite::SQLite(), .dbfile)
 
 # cleanup
-# ~ 5 minutes
+# requires > 65GB free space
+# ~ 15 minutes
+dbExecute(db, 'DROP TABLE cointerp;')
 dbExecute(db, 'VACUUM;')
+
+# sqlite file is 32GB
+
 
 # check indices
 dbGetQuery(db, 'PRAGMA index_list(mapunit);')
@@ -122,6 +140,8 @@ dbGetQuery(db, 'SELECT cokey, compname, comppct_r, majcompflag FROM component LI
 # be sure to close connection / file
 dbDisconnect(db)
 
+
+## on 4-1, gzip for xfer
 
 ## cleanup
 rm(list = ls())
