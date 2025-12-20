@@ -1,4 +1,47 @@
 
+
+
+## query / aggregate each chunk
+#' @param i integer vector of mukey
+#' @param vars character vector of variable names
+#' @param top top depth (cm)
+#' @param bottom bottom depth (cm)
+getDataByChunk <- function(i, vars, top, bottom) {
+  
+  p <-  try(
+    suppressMessages(
+      get_SDA_property(
+        property = vars,
+        method = "Weighted Average", 
+        mukeys = as.integer(i),
+        top_depth = top,
+        bottom_depth = bottom,
+        include_minors = TRUE, 
+        miscellaneous_areas = FALSE,
+        dsn = local.tabularDB
+      )
+    ), silent = TRUE
+  )
+  
+  if (inherits(p, 'try-error')) {
+    message('SDA query failed')
+  }
+  
+  # TODO: any other error conditions?
+  
+  return(p)
+}
+
+
+
+getUniqueValues <- function(i, files) {
+  r <- rast(files[i])
+  v <- unique(values(r, mat = FALSE, dataframe = FALSE, na.rm = TRUE))
+  v <- data.table(mukey = v)
+  return(v)
+}
+
+
 ## TODO: sync aggregation functions with output data type
 
 mosaicProperty <- function(i, input.dir, output.dir, do.aggregate = TRUE, agg.fact = 9, agg.fun = c('modal', 'mean')) {

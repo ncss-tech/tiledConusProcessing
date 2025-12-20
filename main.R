@@ -57,16 +57,31 @@ system.time(
 )
 
 
+## collect unique map unit keys
+# only need to do this once per FY / source grid
+#
+# GFE fSSURGO 30m: 2.7 minutes
+source('prepare-unique-mukey.R')
+
+
+## prepare LUT for unique mukey and all variables
+# do this each time config.R changes
+#
+# GFE fSSURGO 30m: 95 seconds (parallel) | 17 minutes (serial)
+source('prepare-LUT.R')
+
+
 ## process tiles, create thematic grid tiles
 # variables stored in config.R
 # 
-# gSSURGO 30m:        12 minutes (1 property)
-#
+# GFE gSSURGO 30m:        
+# GFE fSSURGO 30m:        7.5 minutes (6 properties)
 system.time(
   source('process-tiles.R')
 )
 
 ## mosaic / re-sample tiles
+# fSSURGO 30m: 
 # gSSURGO 30m:        10 minutes (1 property)
 # gNATSGO 30m:        36 minutes (6 properties)
 # STATSGO 300m:       32 seconds (6 properties)

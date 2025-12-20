@@ -18,6 +18,8 @@ output.dir <- 'temporary-mukey-tiles'
 
 # tile names match tile ID
 # gSSURGO (soilweb): 10 minutes
+#
+# fSSURGO: 7 minutes
 # gNATSGO: 7 minutes
 # STATSGO: 2 minutes
 tileMukeyGrid(mu = mu, tg = tg, output.dir = output.dir)
