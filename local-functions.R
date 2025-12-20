@@ -73,10 +73,9 @@ mosaicProperty <- function(i, input.dir, output.dir, do.aggregate = TRUE, agg.fa
 
 
 
-## TODO: optionally wrap in safely() for simpler error reporting
 ## TODO: what do 0's in the grid represent?
 
-makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
+makeThematicTile <- function(i, tiles, vars, output.dir) {
   
   # current tile
   x <- rast(tiles[i])
@@ -106,39 +105,41 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   # re-name mukey column for consistency across input grids
   names(rat)[2] <- 'mukey'
   
-  # weighted mean over components to account for large misc. areas
-  # depth-weighted average over top--bottom
-  # depths ignored for component level properties like WEI
-  p <-  try(
-    get_SDA_property(
-      property = vars,
-      method = "Weighted Average", 
-      mukeys = as.integer(rat$mukey),
-      top_depth = top,
-      bottom_depth = bottom,
-      include_minors = TRUE, 
-      miscellaneous_areas = FALSE,
-      dsn = local.tabularDB
-    ), silent = TRUE
-  )
+  # # weighted mean over components to account for large misc. areas
+  # # depth-weighted average over top--bottom
+  # # depths ignored for component level properties like WEI
+  # p <-  try(
+  #   get_SDA_property(
+  #     property = vars,
+  #     method = "Weighted Average", 
+  #     mukeys = as.integer(rat$mukey),
+  #     top_depth = top,
+  #     bottom_depth = bottom,
+  #     include_minors = TRUE, 
+  #     miscellaneous_areas = FALSE,
+  #     dsn = local.tabularDB
+  #   ), silent = TRUE
+  # )
+  # 
+  # if (inherits(p, 'try-error')) {
+  #   message('SDA query failed')
+  #   
+  #   # save tile ID + associated RAT
+  #   error.log <- list(i = i, rat = rat)
+  #   return(error.log)
+  # } else {
+  #   error.log <- NULL
+  # }
+  # 
+  # # just in case there were no valid mukeys
+  # if (is.null(p)) {
+  #   return(NULL)
+  # }
+  # 
   
-  if (inherits(p, 'try-error')) {
-    message('SDA query failed')
-    
-    # save tile ID + associated RAT
-    error.log <- list(i = i, rat = rat)
-    return(error.log)
-  } else {
-    error.log <- NULL
-  }
-  
-  # just in case there were no valid mukeys
-  if (is.null(p)) {
-    return(NULL)
-  }
-  
-  # ensure RAT only contains columns of interest
-  p <- p[, c('mukey', vars)]
+  # subset LUT to current set of mukey
+  # ensure LUT only contains columns of interest
+  p <- lut[which(lut$mukey %in% rat$mukey), c('mukey', vars)]
   
   # merge aggregate data into RAT
   rat <- merge(rat, p, by.x = 'mukey', by.y = 'mukey', sort = FALSE, all.x = TRUE)
@@ -170,10 +171,7 @@ makeThematicTileSDA <- function(i, tiles, vars, top, bottom, output.dir) {
   rm(x, .x)
   gc(reset = TRUE)
  
-  # when SDA throws an error, tile ID + rat
-  # otherwise NULL
-  return(error.log)
-   
+  # TODO: trap and return errors?
 }
 
 

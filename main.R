@@ -71,11 +71,14 @@ source('prepare-unique-mukey.R')
 source('prepare-LUT.R')
 
 
+
+
+## TODO: finsih adapting this to pre-made LUT
+
 ## process tiles, create thematic grid tiles
 # variables stored in config.R
 # 
-# GFE gSSURGO 30m:        
-# GFE fSSURGO 30m:        7.5 minutes (6 properties)
+# GFE fSSURGO 30m:   (6 properties)
 system.time(
   source('process-tiles.R')
 )
