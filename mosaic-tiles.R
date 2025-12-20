@@ -30,7 +30,7 @@ dir.create(output.dir)
 # aggregate seems to use multiple cores, so only start 4 concurrent operations
 # 4 workers  -> 28GB RAM required
 # 16 workers -> 60GB RAM required
-plan(multisession, workers = 16)
+plan(multisession, workers = 4)
 
 system.time(z <- future_map(v, .f = mosaicProperty, input.dir = input.dir, output.dir = output.dir, do.aggregate = .agg, .progress = TRUE))
 

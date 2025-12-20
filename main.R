@@ -73,18 +73,21 @@ source('prepare-LUT.R')
 
 
 
-## TODO: finsih adapting this to pre-made LUT
-
 ## process tiles, create thematic grid tiles
 # variables stored in config.R
 # 
-# GFE fSSURGO 30m:   (6 properties)
+# 2025-12-19
+# GFE fSSURGO 30m: 1 hour !!!  (6 properties)
 system.time(
   source('process-tiles.R')
 )
 
 ## mosaic / re-sample tiles
-# fSSURGO 30m: 
+
+# 2025-12-19
+# fSSURGO 30m:        21 minutes (6 properties)
+
+
 # gSSURGO 30m:        10 minutes (1 property)
 # gNATSGO 30m:        36 minutes (6 properties)
 # STATSGO 300m:       32 seconds (6 properties)

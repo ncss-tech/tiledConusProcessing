@@ -4,9 +4,7 @@
 
 library(soilDB)
 library(terra)
-library(sf)
-library(rasterVis)
-
+# library(sf)
 
 
 # "one or more major components have NULL ST edition"
@@ -22,7 +20,7 @@ sql <- "SELECT
 # no semi-colons allowed in the SQL
 x <- soilDB:::.SDA_query_FOR_JSON_AUTO(sql)
 
-# 321973
+# 329691
 nrow(x)
 
 table(x$invesintens, useNA = 'always')
@@ -31,7 +29,7 @@ table(x$invesintens, useNA = 'always')
 
 # this approach works with match() because all factor levels are present
 # in the source LUT
-x$invesintens <- factor(x$invesintens, levels = c('missing', 'Order 1', 'Order 2', 'Order 3', 'Order 4', 'Order 5'))
+x$invesintens <- factor(x$invesintens, levels = c('missing', 'Order 2', 'Order 3', 'Order 4', 'Order 5'))
 x$i <- as.numeric(x$invesintens)
 
 head(x)
@@ -51,17 +49,19 @@ head(x)
 # .f(c(NA, 50227, NA))
 
 
-# CONUS gNATSGO 30m grid
-g <- rast('E:/gis_data/mukey-grids/gNATSGO-mukey.tif')
+# CONUS fSSURGO 30m grid
+g <- rast('E:/gis_data/mukey-grids/fSSURGO-mukey.tif')
 
+# 2025-12-19
+# GFE: fSSURGO 30m: 8.8 minutes
+#
 # ~ 17 minutes
 system.time(r <- app(g, fun = .f, filename = 'examples/invesintens.tif', overwrite = TRUE))
 
 # 10x aggregation
-# ~ 6 minutes
+# GFE fSSURGO 30m: 2.7 minutes
 system.time(a <- aggregate(r, fact = 10, fun = 'modal', filename = 'examples/invesintens.tif-300m.tif', overwrite = TRUE))
 
-# mask?
 
 
 

@@ -4,8 +4,6 @@
 
 
 ## TODO: careful with NA handling
-## TODO: catch failed SDA requests in a second pass
-## -----> why does this happen?
 
 
 # library(DBI)
@@ -56,7 +54,7 @@ g.files <- list.files(path = 'temporary-mukey-tiles', pattern = '\\.tif$', full.
 # unique mukeys, SDA aggregation, RAT -> value grids
 # 
 
-
+## TODO: this is much slower than it should be, why?
 
 ## init multiple cores
 # plan(multicore) # linux

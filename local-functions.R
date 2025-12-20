@@ -105,38 +105,6 @@ makeThematicTile <- function(i, tiles, vars, output.dir) {
   # re-name mukey column for consistency across input grids
   names(rat)[2] <- 'mukey'
   
-  # # weighted mean over components to account for large misc. areas
-  # # depth-weighted average over top--bottom
-  # # depths ignored for component level properties like WEI
-  # p <-  try(
-  #   get_SDA_property(
-  #     property = vars,
-  #     method = "Weighted Average", 
-  #     mukeys = as.integer(rat$mukey),
-  #     top_depth = top,
-  #     bottom_depth = bottom,
-  #     include_minors = TRUE, 
-  #     miscellaneous_areas = FALSE,
-  #     dsn = local.tabularDB
-  #   ), silent = TRUE
-  # )
-  # 
-  # if (inherits(p, 'try-error')) {
-  #   message('SDA query failed')
-  #   
-  #   # save tile ID + associated RAT
-  #   error.log <- list(i = i, rat = rat)
-  #   return(error.log)
-  # } else {
-  #   error.log <- NULL
-  # }
-  # 
-  # # just in case there were no valid mukeys
-  # if (is.null(p)) {
-  #   return(NULL)
-  # }
-  # 
-  
   # subset LUT to current set of mukey
   # ensure LUT only contains columns of interest
   p <- lut[which(lut$mukey %in% rat$mukey), c('mukey', vars)]
@@ -157,6 +125,11 @@ makeThematicTile <- function(i, tiles, vars, output.dir) {
   
   # 4.8 seconds / variable
   # system.time(x.stack <- as.numeric(x, index = vars[1]))
+  
+  # 2025-12-20: as.numeric() is the slowest part of this function - why?
+  #
+  # as.numeric(): 9.24 seconds / variable
+  # catalyze():   9.4 seconds / variable
   
   # continuous properties
   for (.var in vars) {
