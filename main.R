@@ -77,7 +77,7 @@ source('prepare-LUT.R')
 # variables stored in config.R
 # 
 # 2025-12-19
-# GFE fSSURGO 30m: 1 hour !!!  (6 properties)
+# GFE fSSURGO 30m: 69 minutes !!!  (6 properties)
 system.time(
   source('process-tiles.R')
 )
