@@ -76,8 +76,9 @@ source('prepare-LUT.R')
 ## process tiles, create thematic grid tiles
 # variables stored in config.R
 # 
-# 2025-12-19
-# GFE fSSURGO 30m: 69 minutes !!!  (6 properties)
+# 2026-02-13
+# terra terra_1.8-97
+# GFE fSSURGO 30m: 13 minutes !!!  (6 properties)
 system.time(
   source('process-tiles.R')
 )
@@ -86,6 +87,10 @@ system.time(
 
 # 2025-12-19
 # fSSURGO 30m:        21 minutes (6 properties)
+
+# 2026-02-13
+# fSSURGO 30m:        19.5 minutes (6 properties)
+
 
 
 # gSSURGO 30m:        10 minutes (1 property)

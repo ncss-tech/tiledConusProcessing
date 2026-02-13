@@ -59,6 +59,10 @@ z <- do.call('rbind', z)
 ## QC
 table(is.na(z$mukey))
 
+# should be 0
+m <- readRDS('unique-mukey.rds')
+setdiff(z$mukey, m$mukey)
+
 
 ## save
 saveRDS(z, file = 'LUT.rds')
