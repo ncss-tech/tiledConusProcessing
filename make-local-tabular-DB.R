@@ -69,8 +69,23 @@ system.time(
 # 
 # not really tested, since I already have a copy of these files in /ssa/fy25
 # system.time(
-#   downloadSSURGO(areasymbols = x$areasymbol, exdir = .exdir2, include_template = FALSE, remove_zip = TRUE, extract = TRUE, overwrite = TRUE, db = 'SSURGO')  
+#   downloadSSURGO(areasymbols = x$areasymbol, exdir = .exdir2, include_template = FALSE, extract = FALSE, overwrite = TRUE, db = 'SSURGO')  
 # )
+
+# TODO
+# extract zip files in parallel
+
+# # unzip and then delete source archive to save space
+# # ~ 17 seconds
+# system.time(
+#   future_walk(f, .progress = TRUE, .f = function(i) {
+#     unzip(i, exdir = td, overwrite = TRUE)
+#     unlink(i, force = TRUE)
+#   })
+# )
+# 
+# plan(sequential)
+
 
 
 
